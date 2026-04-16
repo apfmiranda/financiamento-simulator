@@ -251,7 +251,7 @@ export default function FinancingSimulator() {
                       <YAxis hide />
                       <Tooltip
                         contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px" }}
-                        formatter={(v: number) => formatCurrency(v)}
+                        formatter={(v: any) => formatCurrency(Number(v))}
                       />
                       <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
                       <Area type="monotone" dataKey="original" stroke="#fff" strokeOpacity={0.2} fillOpacity={1} fill="url(#gradOriginal)" name="Original" />
@@ -273,7 +273,7 @@ export default function FinancingSimulator() {
                       <YAxis hide />
                       <Tooltip
                         contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px" }}
-                        formatter={(v: number) => formatCurrency(v)}
+                        formatter={(v: any) => formatCurrency(Number(v))}
                       />
                       <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
                       <Bar dataKey="Original" fill="rgba(255,255,255,0.15)" radius={[6, 6, 0, 0]} />
@@ -315,7 +315,7 @@ export default function FinancingSimulator() {
                       <YAxis hide />
                       <Tooltip
                         contentStyle={{ backgroundColor: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px" }}
-                        formatter={(v: number) => formatCurrency(v)}
+                        formatter={(v: any) => formatCurrency(Number(v))}
                       />
                       <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
                       <Area type="monotone" dataKey="original" stroke="#fff" strokeOpacity={0.2} fillOpacity={1} fill="url(#gradOrig)" name="Original" />
