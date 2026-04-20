@@ -112,10 +112,20 @@ export default function FinancingSimulator() {
   const activeData = activeTab === "prazo" ? prazoData : parcelaData;
   const activeStats = activeData.stats;
 
+  const getParcelaText = (data: typeof prazoData, isPrazo: boolean) => {
+    if (!data.rows.length) return "R$ 0,00";
+    const first = data.rows[0].installment;
+    if (isPrazo) return formatCurrency(first);
+
+    const last = data.rows[data.rows.length - 1].installment;
+    if (Math.abs(first - last) < 1) return formatCurrency(first);
+    return `${formatCurrency(last)}`;
+  };
+
   return (
     <div className="space-y-4 md:space-y-8 pb-12 md:pb-20">
       {/* KPI Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 md:gap-4">
         <StatCard
           title="Total de Juros"
           value={formatCurrency(activeStats.totalInterest)}
@@ -136,6 +146,11 @@ export default function FinancingSimulator() {
           trend={hasExtras && activeStats.durationInMonths < inputs.months
             ? `Reduzido em ${inputs.months - activeStats.durationInMonths} meses`
             : null}
+        />
+        <StatCard
+          title="Parcela Atual"
+          value={baseData.rows.length ? formatCurrency(baseData.rows[0].installment) : "R$ 0,00"}
+          icon={<Banknote className="w-5 h-5 text-accent" />}
         />
         <StatCard
           title="Valor Financiado"
@@ -206,6 +221,7 @@ export default function FinancingSimulator() {
                   icon={<Clock className="w-5 h-5" />}
                   color="accent"
                   stats={[
+                    { label: "Parcela", value: getParcelaText(prazoData, true) },
                     { label: "Duração", value: `${prazoData.stats.durationInMonths} meses`, highlight: prazoData.stats.durationInMonths < inputs.months },
                     { label: "Total Juros", value: formatCurrency(prazoData.stats.totalInterest) },
                     { label: "Total Pago", value: formatCurrency(prazoData.stats.totalPaid) },
@@ -218,6 +234,7 @@ export default function FinancingSimulator() {
                   icon={<Banknote className="w-5 h-5" />}
                   color="secondary"
                   stats={[
+                    { label: "Parcela Atual", value: getParcelaText(parcelaData, false) },
                     { label: "Duração", value: `${parcelaData.stats.durationInMonths} meses` },
                     { label: "Total Juros", value: formatCurrency(parcelaData.stats.totalInterest) },
                     { label: "Total Pago", value: formatCurrency(parcelaData.stats.totalPaid) },
@@ -375,11 +392,10 @@ function TabButton({ active, onClick, icon, label }: { active: boolean; onClick:
   return (
     <button
       onClick={onClick}
-      className={`flex-1 flex items-center justify-center gap-1.5 md:gap-2 py-2.5 md:py-3 px-2 md:px-4 rounded-lg text-xs md:text-sm font-semibold transition-all ${
-        active
+      className={`flex-1 flex items-center justify-center gap-1.5 md:gap-2 py-2.5 md:py-3 px-2 md:px-4 rounded-lg text-xs md:text-sm font-semibold transition-all ${active
           ? "bg-white/10 text-white shadow-lg border border-white/10"
           : "text-white/40 hover:text-white/60 hover:bg-white/5"
-      }`}
+        }`}
     >
       {icon}
       <span>{label}</span>
