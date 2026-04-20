@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { GlassCard } from "./GlassCard";
 import { FinancingInputs, calculatePriceAmortization, summarizeFinancing } from "@/lib/finance";
 import { formatCurrency } from "@/lib/utils";
@@ -15,19 +15,48 @@ import {
 
 type ActiveTab = "prazo" | "parcela" | "comparativo";
 
+const DEFAULT_INPUTS: FinancingInputs = {
+  assetValue: 136800,
+  downPayment: 43610,
+  monthlyInterestRate: 1.4,
+  months: 60,
+  fees: 4554.58,
+  extraAmortizations: {},
+};
+
 export default function FinancingSimulator() {
-  const [inputs, setInputs] = useState<FinancingInputs>({
-    assetValue: 136800,
-    downPayment: 43610,
-    monthlyInterestRate: 1.4,
-    months: 60,
-    fees: 4554.58,
-    extraAmortizations: {},
-  });
+  const [inputs, setInputs] = useState<FinancingInputs>(DEFAULT_INPUTS);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const [extraMonth, setExtraMonth] = useState("");
   const [extraAmount, setExtraAmount] = useState("");
   const [activeTab, setActiveTab] = useState<ActiveTab>("comparativo");
+
+  // Load from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("financing_simulator_inputs");
+    const savedTab = localStorage.getItem("financing_simulator_active_tab");
+    
+    if (saved) {
+      try {
+        setInputs(JSON.parse(saved));
+      } catch (e) {
+        console.error("Error loading saved inputs:", e);
+      }
+    }
+    if (savedTab) {
+      setActiveTab(savedTab as ActiveTab);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save to localStorage
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem("financing_simulator_inputs", JSON.stringify(inputs));
+      localStorage.setItem("financing_simulator_active_tab", activeTab);
+    }
+  }, [inputs, activeTab, isLoaded]);
 
   // Cenário A: Redução de Prazo (amortiza e mantém parcela, quita antes)
   const prazoData = useMemo(() => {
